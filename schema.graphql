@@ -28,7 +28,7 @@ type Token @entity {
   baseURI: String
   createdAtTimestamp: BigInt!
   updatedAtTimestamp: BigInt
-  # type: String
+  type: String
   # hat: String
   # eyes: String
   # nose: String

@@ -2,9 +2,7 @@ import {
   Contract as TokenContract,
   Transfer as TransferEvent,
 } from "../generated/Contract/Contract";
-
 import { Token, User } from "../generated/schema";
-
 import { ipfs, json, JSONValue } from "@graphprotocol/graph-ts";
 
 export function handleTransfer(event: TransferEvent): void {
@@ -46,72 +44,89 @@ export function handleTransfer(event: TransferEvent): void {
   token.contentURI = contentURI;
   token.baseURI = baseURI;
 
-  if (contentURI != "") {
-    let hash = contentURI.split('ipfs.io/ipfs/').join('')
-    let data = ipfs.cat(hash)
+  if (contentURI) {
+    let hash = contentURI.split("ipfs.io/ipfs/").join("");
+    let data = ipfs.cat(hash);
 
-    if (!data) return;
+    if (!data) {
+      return; // we don't have data available from the hash
+    }
 
     let value = json.fromBytes(data).toObject();
 
-    if (data) {
-      var image = value.get("image");
+    var image = value.get("image");
 
-      if (image) {
-        let h = image.toString();
-        let imageHash = h.split("ipfs://").join("");
-        token.imageURI = imageHash;
-      }
-
-      // let attributes: JSONValue[];
-
-      // let atts = value.get("attributes");
-
-      // if (atts) {
-      //   attributes = atts.toArray();
-      // }
-
-      // for (let i = 0; i < attributes.length; i++) {
-      //   let item = attributes[i].toObject();
-      //   let trait: string;
-      //   let t = item.get("trait_type");
-      //   if (t) {
-      //     trait = t.toString();
-      //   }
-      //   let value: string;
-      //   let v = item.get("value");
-      //   if (v) {
-      //     value = v.toString();
-      //   }
-      //   if (trait == "Type") {
-      //     token.type = value;
-      //   }
-
-      //   if (trait == "Hat") {
-      //     token.hat = value;
-      //   }
-
-      //   if (trait == "Eyes") {
-      //     token.eyes = value;
-      //   }
-
-      //   if (trait == "Nose") {
-      //     token.nose = value;
-      //   }
-
-      //   if (trait == "Clothes") {
-      //     token.clothes = value;
-      //   }
-
-      //   if (trait == "Tattoo") {
-      //     token.tattoo = value;
-      //   }
-
-      //   if (trait == "Background") {
-      //     token.background = value;
-      //   }
-      // }
+    if (image) {
+      let h = image.toString();
+      let imageHash = h.split("ipfs://").join("");
+      token.imageURI = imageHash;
     }
+
+    let attributes = value.get("attributes")?.toArray();
+
+    if (attributes?.length) {
+      for (let i = 0; i < attributes.length; i++) {
+        let item = attributes[i].toObject();
+
+        let trait: string | '' = '';;
+        let traitItem = item.get("trait_type");
+        if (traitItem) {
+          trait = traitItem.toString();
+        }
+
+        let value: string | '' = '';;
+        let valueItem = item.get("value");
+        if (valueItem) {
+          value = valueItem.toString();
+        }
+
+				if (trait == "Type") {
+					token.type = value;
+				}
+
+      }
+    }
+
+    // for (let i = 0; i < attributes.length; i++) {
+    //   let item = attributes[i].toObject();
+    //   let trait: string;
+    //   let t = item.get("trait_type");
+    //   if (t) {
+    //     trait = t.toString();
+    //   }
+    //   let value: string;
+    //   let v = item.get("value");
+    //   if (v) {
+    //     value = v.toString();
+    //   }
+    //   if (trait == "Type") {
+    //     token.type = value;
+    //   }
+
+    //   if (trait == "Hat") {
+    //     token.hat = value;
+    //   }
+
+    //   if (trait == "Eyes") {
+    //     token.eyes = value;
+    //   }
+
+    //   if (trait == "Nose") {
+    //     token.nose = value;
+    //   }
+
+    //   if (trait == "Clothes") {
+    //     token.clothes = value;
+    //   }
+
+    //   if (trait == "Tattoo") {
+    //     token.tattoo = value;
+    //   }
+
+    //   if (trait == "Background") {
+    //     token.background = value;
+    //   }
+    // }
   }
 
   token.owner = event.params.to.toHexString();

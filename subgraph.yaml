@@ -1,4 +1,6 @@
 specVersion: 0.0.2
+description: An index for worlds in the iwwon universe
+repository: https://github.com/quasi-askew/world-of-iwwon
 schema:
   file: ./schema.graphql
 dataSources:
@@ -8,7 +10,7 @@ dataSources:
     source:
       address: "0x1a2F71468F656E97c2F86541E57189F59951efe7"
       abi: Contract
-      startBlock: 13373224
+      startBlock: 13391696
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
